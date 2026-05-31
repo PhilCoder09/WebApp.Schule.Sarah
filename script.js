@@ -274,13 +274,14 @@ const STATIONS = {
         type: 'number'
       }
     ],
-    onCorrect: { giveCode: 'H', codePos: 5, next: 12 },
+    onCorrect: { giveCode: 'H', codePos: 5, next: 13 },
     onWrong:   { next: 12 }
   },
 
   12: {
     id: 12,
     title: 'Feuerwehrleiter',
+    isSupport: true,
     parts: [
       {
         question:
@@ -327,7 +328,7 @@ const CODE_LENGTH = 7;
 // ZUSTAND
 // ══════════════════════════════════════════════════════════════
 
-const STORAGE_KEY = 'pythagoras_v2';
+const STORAGE_KEY = 'pythagoras_v3';
 
 let state = {
   unlocked:      false,   // Passwort korrekt eingegeben?
