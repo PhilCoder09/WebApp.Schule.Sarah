@@ -5,595 +5,809 @@
 
 'use strict';
 
-// ── STATIONEN ────────────────────────────────────────────────
-const STATIONS = [
-  {
+// ══════════════════════════════════════════════════════════════
+// STATIONEN
+// Jede Station hat:
+//   id        – Nummer (1–13)
+//   title     – Titel
+//   parts     – Array von Teilfragen { question, answer, type }
+//               type: 'number' | 'text' | 'formula'
+//   onCorrect – { giveCode: 'X', next: N }
+//   onWrong   – { next: N }
+//
+// Codeblöcke (Position im 7-stelligen Code):
+//   Block 1 (pos 0): Station 1 oder 2  → A
+//   Block 2 (pos 1): Station 3 oder 4  → Z
+//   Block 3 (pos 2): Station 5 oder 6  → L
+//   Block 4 (pos 3): Station 7 oder 8  → J
+//   Block 5 (pos 4): Station 9 oder 10 → C
+//   Block 6 (pos 5): Station 11 oder 12→ H
+//   Block 7 (pos 6): Station 13        → B
+// ══════════════════════════════════════════════════════════════
+
+const STATIONS = {
+
+  1: {
     id: 1,
-    title: 'Begriffe am rechtwinkligen Dreieck',
-    task:
-      'Ein rechtwinkliges Dreieck hat die Seiten a = 6 cm, b = 8 cm und c = 10 cm.\n' +
-      'Welche Seite ist die Hypotenuse?',
-    answer: 'c',
-    type: 'text',
-    extra: {
-      task: 'Welche Seite liegt immer gegenüber dem rechten Winkel?',
-      answer: 'hypotenuse',
-      type: 'text'
-    },
-    code: 'M'
+    title: 'Begriffe und erste Rechnung',
+    parts: [
+      {
+        question: 'Wie lang ist Seite c, wenn a = 6 cm und b = 8 cm sind?',
+        answer: 10,
+        type: 'number'
+      },
+      {
+        question:
+          'Welche Aussage ist richtig?\n' +
+          'A) Die Hypotenuse liegt immer gegenüber dem rechten Winkel.\n' +
+          'B) Die Hypotenuse ist die kürzeste Seite.\n' +
+          'C) Katheten liegen gegenüber dem rechten Winkel.',
+        answer: 'a',
+        type: 'text'
+      }
+    ],
+    onCorrect: { giveCode: 'A', codePos: 0, next: 3 },
+    onWrong:   { next: 2 }
   },
-  {
+
+  2: {
     id: 2,
-    title: 'Hypotenuse erkennen',
-    task: 'Welche Seite liegt immer gegenüber dem rechten Winkel?',
-    answer: 'hypotenuse',
-    type: 'text',
-    extra: {
-      task: 'Sind Katheten die Seiten, die am rechten Winkel liegen? Antworte mit ja oder nein.',
-      answer: 'ja',
-      type: 'text'
-    },
-    code: 'Q'
+    title: 'Förderstation Begriffe',
+    isSupport: true,
+    parts: [
+      {
+        question:
+          'Hast du immer die längste Seite im Dreieck als Hypotenuse markiert?\n' +
+          'Antworte mit Ja oder Nein.',
+        answer: 'ja',
+        type: 'text'
+      }
+    ],
+    onCorrect: { giveCode: 'A', codePos: 0, next: 3 },
+    onWrong:   { next: 3 }
   },
-  {
+
+  3: {
     id: 3,
-    title: 'Pythagorasformel erkennen',
-    task:
-      'Welche Formel gehört zum Satz des Pythagoras?\n\n' +
-      'A: a+b=c\n' +
-      'B: a²+b²=c²\n' +
-      'C: ab=c\n\n' +
-      'Gib A, B oder C ein.',
-    answer: 'b',
-    type: 'text',
-    extra: {
-      task: 'Ergänze: a² + b² = ?',
-      answer: ['c²', 'c^2', 'c2'],
-      type: 'text'
-    },
-    code: 'T'
+    title: 'Formel erkennen und übertragen',
+    parts: [
+      {
+        question:
+          'Welche Formel gehört zum Satz des Pythagoras?\n' +
+          'A) a + b = c\n' +
+          'B) a² + b² = c²\n' +
+          'C) ab = c',
+        answer: 'b',
+        type: 'text'
+      },
+      {
+        question: 'Katheten u und v, Hypotenuse w. Schreibe die Formel.',
+        answer: ['u^2+v^2=w^2', 'u²+v²=w²'],
+        type: 'formula'
+      },
+      {
+        question: 'Katheten r und s, Hypotenuse t. Schreibe die Formel.',
+        answer: ['r^2+s^2=t^2', 'r²+s²=t²'],
+        type: 'formula'
+      },
+      {
+        question: 'Katheten x und y, Hypotenuse z. Schreibe die Formel.',
+        answer: ['x^2+y^2=z^2', 'x²+y²=z²'],
+        type: 'formula'
+      },
+      {
+        question: 'Katheten b und c, Hypotenuse a. Schreibe die Formel.',
+        answer: ['b^2+c^2=a^2', 'b²+c²=a²'],
+        type: 'formula'
+      }
+    ],
+    onCorrect: { giveCode: 'Z', codePos: 1, next: 5 },
+    onWrong:   { next: 4 }
   },
-  {
+
+  4: {
     id: 4,
-    title: 'Formel mit anderen Variablen',
-    task:
-      'In einem rechtwinkligen Dreieck heißen die Katheten x und y. Die Hypotenuse heißt z.\n' +
-      'Schreibe die passende Pythagorasformel.',
-    answer: ['x²+y²=z²', 'x^2+y^2=z^2', 'x2+y2=z2'],
-    type: 'text',
-    extra: {
-      task: 'Die Katheten heißen r und s. Die Hypotenuse heißt t. Schreibe die passende Formel.',
-      answer: ['r²+s²=t²', 'r^2+s^2=t^2', 'r2+s2=t2'],
-      type: 'text'
-    },
-    code: 'B'
+    title: 'Förderstation Formel',
+    isSupport: true,
+    parts: [
+      {
+        question: 'Katheten a und b, Hypotenuse c. Schreibe die Formel.',
+        answer: ['a^2+b^2=c^2', 'a²+b²=c²'],
+        type: 'formula'
+      },
+      {
+        question: 'Katheten b und c, Hypotenuse a. Schreibe die Formel.',
+        answer: ['b^2+c^2=a^2', 'b²+c²=a²'],
+        type: 'formula'
+      },
+      {
+        question: 'Katheten a und c, Hypotenuse b. Schreibe die Formel.',
+        answer: ['a^2+c^2=b^2', 'a²+c²=b²'],
+        type: 'formula'
+      }
+    ],
+    onCorrect: { giveCode: 'Z', codePos: 1, next: 5 },
+    onWrong:   { next: 5 }
   },
-  {
+
+  5: {
     id: 5,
     title: 'Hypotenuse berechnen',
-    task: 'Gegeben: a = 5 cm, b = 12 cm. Berechne c.',
-    answer: 13,
-    type: 'number',
-    extra: {
-      task: 'Gegeben: a = 8 cm, b = 15 cm. Berechne c.',
-      answer: 17,
-      type: 'number'
-    },
-    code: 'X'
+    parts: [
+      {
+        question:
+          'Berechne die Hypotenuse.\n' +
+          'Gegeben: a = 5 cm, b = 12 cm.\n' +
+          'Ergebnis mit Einheit möglich.',
+        answer: 13,
+        type: 'number'
+      },
+      {
+        question:
+          'Berechne die Hypotenuse.\n' +
+          'Gegeben: a = 8,5 cm, b = 15 cm.\n' +
+          'Gib zwei Nachkommastellen an.',
+        answer: 17.24,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'L', codePos: 2, next: 7 },
+    onWrong:   { next: 6 }
   },
-  {
+
+  6: {
     id: 6,
-    title: 'Hypotenuse mit Dezimalergebnis',
-    task: 'Gegeben: a = 4 cm, b = 5 cm. Berechne c. Runde auf zwei Dezimalstellen.',
-    answer: 6.40,
-    type: 'number',
-    extra: {
-      task: 'Gegeben: a = 6 cm, b = 10 cm. Berechne c. Runde auf zwei Dezimalstellen.',
-      answer: 11.66,
-      type: 'number'
-    },
-    code: 'H'
+    title: 'Förderstation Hypotenuse',
+    isSupport: true,
+    parts: [
+      {
+        question:
+          'Berechne die Hypotenuse.\n' +
+          'Gegeben: a = 4 cm, b = 5 cm.\n' +
+          'Gib eine Nachkommastelle an.',
+        answer: 6.4,
+        type: 'number'
+      },
+      {
+        question:
+          'Berechne die Hypotenuse.\n' +
+          'Gegeben: a = 6 cm, b = 10 cm.\n' +
+          'Gib zwei Nachkommastellen an.',
+        answer: 11.66,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'L', codePos: 2, next: 7 },
+    onWrong:   { next: 7 }
   },
-  {
+
+  7: {
     id: 7,
     title: 'Kathete berechnen',
-    task: 'Gegeben: c = 13 cm, a = 5 cm. Berechne b.',
-    answer: 12,
-    type: 'number',
-    extra: {
-      task: 'Gegeben: c = 10 cm, b = 6 cm. Berechne a.',
-      answer: 8,
-      type: 'number'
-    },
-    code: 'P'
+    parts: [
+      {
+        question:
+          'Berechne die Kathete.\n' +
+          'Gegeben: c = 13 cm, a = 5 cm. Berechne b.',
+        answer: 12,
+        type: 'number'
+      },
+      {
+        question:
+          'Berechne die Kathete.\n' +
+          'Gegeben: c = 10 cm, b = 6 cm. Berechne a.',
+        answer: 8,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'J', codePos: 3, next: 9 },
+    onWrong:   { next: 8 }
   },
-  {
+
+  8: {
     id: 8,
-    title: 'Kathete berechnen 2',
-    task: 'Gegeben: c = 15 cm, a = 9 cm. Berechne b.',
-    answer: 12,
-    type: 'number',
-    extra: {
-      task: 'Gegeben: c = 17 cm, b = 8 cm. Berechne a.',
-      answer: 15,
-      type: 'number'
-    },
-    code: 'K'
+    title: 'Förderstation Kathete',
+    isSupport: true,
+    parts: [
+      {
+        question:
+          'Berechne die Kathete.\n' +
+          'Gegeben: c = 15 cm, a = 9 cm. Berechne b.',
+        answer: 12,
+        type: 'number'
+      },
+      {
+        question:
+          'Berechne die Kathete.\n' +
+          'Gegeben: c = 17 cm, b = 8 cm. Berechne a.',
+        answer: 15,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'J', codePos: 3, next: 9 },
+    onWrong:   { next: 9 }
   },
-  {
+
+  9: {
     id: 9,
     title: 'Planskizze und Hypotenuse',
-    task:
-      'Ein rechtwinkliges Dreieck besitzt die Katheten a = 9 cm und b = 12 cm.\n' +
-      'Berechne die Hypotenuse c.',
-    answer: 15,
-    type: 'number',
-    extra: {
-      task:
-        'Ein rechtwinkliges Dreieck besitzt die Katheten a = 7 cm und b = 24 cm.\n' +
-        'Berechne die Hypotenuse c.',
-      answer: 25,
-      type: 'number'
-    },
-    code: 'R'
+    parts: [
+      {
+        question:
+          'Ein rechtwinkliges Dreieck besitzt die Katheten a = 9 cm und b = 12 cm.\n' +
+          'Wie lang ist die Hypotenuse?',
+        answer: 15,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'C', codePos: 4, next: 11 },
+    onWrong:   { next: 10 }
   },
-  {
+
+  10: {
     id: 10,
-    title: 'Weitere Planskizze',
-    task:
-      'Ein rechtwinkliges Dreieck besitzt die Katheten a = 10 cm und b = 24 cm.\n' +
-      'Berechne die Hypotenuse c.',
-    answer: 26,
-    type: 'number',
-    extra: {
-      task:
-        'Ein rechtwinkliges Dreieck besitzt die Katheten a = 12 cm und b = 16 cm.\n' +
-        'Berechne die Hypotenuse c.',
-      answer: 20,
-      type: 'number'
-    },
-    code: 'A'
+    title: 'Förderstation Planskizze',
+    isSupport: true,
+    parts: [
+      {
+        question:
+          'Ein rechtwinkliges Dreieck besitzt die Katheten a = 10 cm und b = 24 cm.\n' +
+          'Wie lang ist die Hypotenuse?',
+        answer: 26,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'C', codePos: 4, next: 11 },
+    onWrong:   { next: 11 }
   },
-  {
+
+  11: {
     id: 11,
     title: 'Leiter am Haus',
-    task:
-      'Eine Leiter steht 5 m von einer Hauswand entfernt. Das Fenster befindet sich 12 m über dem Boden.\n' +
-      'Wie lang muss die Leiter mindestens sein?',
-    answer: 13,
-    type: 'number',
-    extra: {
-      task:
-        'Eine Leiter steht 6 m von einer Hauswand entfernt. Das Fenster befindet sich 8 m über dem Boden.\n' +
-        'Wie lang muss die Leiter mindestens sein?',
-      answer: 10,
-      type: 'number'
-    },
-    code: 'N'
+    parts: [
+      {
+        question:
+          'Eine Leiter steht 5 m von einer Hauswand entfernt.\n' +
+          'Das Fenster befindet sich 12 m über dem Boden.\n' +
+          'Wie lang ist die Leiter?',
+        answer: 13,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'H', codePos: 5, next: 12 },
+    onWrong:   { next: 12 }
   },
-  {
+
+  12: {
     id: 12,
     title: 'Feuerwehrleiter',
-    task:
-      'Eine Leiter steht 8 m von einer Hauswand entfernt. Das Fenster befindet sich 15 m über dem Boden.\n' +
-      'Wie lang muss die Leiter mindestens sein?',
-    answer: 17,
-    type: 'number',
-    extra: {
-      task:
-        'Eine Leiter steht 9 m von einer Hauswand entfernt. Das Fenster befindet sich 12 m über dem Boden.\n' +
-        'Wie lang muss die Leiter mindestens sein?',
-      answer: 15,
-      type: 'number'
-    },
-    code: 'F'
+    parts: [
+      {
+        question:
+          'Eine Leiter steht 8 m von einer Hauswand entfernt.\n' +
+          'Das Fenster befindet sich 15 m über dem Boden.\n' +
+          'Wie lang ist die Leiter?',
+        answer: 17,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'H', codePos: 5, next: 13 },
+    onWrong:   { next: 13 }
   },
-  {
+
+  13: {
     id: 13,
     title: 'Stern-Aufgabe ⭐',
-    task:
-      'Ein Stern besteht aus rechtwinkligen Dreiecken. In einem Dreieck gilt: a = 5 cm und c = 13 cm.\n' +
-      'Berechne zuerst die fehlende Kathete b.',
-    answer: 12,
-    type: 'number',
-    extra: {
-      task:
-        'In einem weiteren rechtwinkligen Dreieck gilt: b = 12 cm und c = 20 cm.\n' +
-        'Berechne die fehlende Kathete z. Runde auf zwei Dezimalstellen.',
-      answer: 16,
-      type: 'number'
-    },
-    code: 'Z'
+    parts: [
+      {
+        question:
+          'Wie lang ist Seite x?\n' +
+          'Gib zwei Nachkommastellen an.',
+        answer: 19.84,
+        type: 'number'
+      },
+      {
+        question:
+          'Wie lang ist Seite z?\n' +
+          'Gib zwei Nachkommastellen an.',
+        answer: 39.76,
+        type: 'number'
+      }
+    ],
+    onCorrect: { giveCode: 'B', codePos: 6, next: null },
+    onWrong:   { next: null }
   }
-];
 
-// ── ZUSTAND ───────────────────────────────────────────────────
-const STORAGE_KEY = 'pythagoras_mission_v1';
-
-let state = {
-  currentIndex: -1,   // -1 = Startbildschirm
-  collectedCodes: []  // Array der gesammelten Buchstaben (in Reihenfolge)
 };
 
-// ── HILFSFUNKTIONEN ───────────────────────────────────────────
+// Maximaler Code (7 Positionen)
+const CODE_LENGTH = 7;
+
+// ══════════════════════════════════════════════════════════════
+// ZUSTAND
+// ══════════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'pythagoras_v2';
+
+let state = {
+  unlocked:      false,   // Passwort korrekt eingegeben?
+  currentStation: null,   // aktuelle Stations-ID (1–13)
+  codeSlots:     new Array(CODE_LENGTH).fill(null), // null = noch nicht erhalten
+  visited:       []       // besuchte Stations-IDs
+};
+
+// Zwischenspeicher für die aktuelle Prüfung
+let pendingNext = null;   // nächste Station nach "Weiter"
+
+// ══════════════════════════════════════════════════════════════
+// EINGABE-NORMALISIERUNG & PRÜFUNG
+// ══════════════════════════════════════════════════════════════
 
 /**
- * Bereinigt eine Eingabe: entfernt Einheiten, Leerzeichen,
- * normalisiert Komma → Punkt.
+ * Bereinigt eine Eingabe:
+ * - Leerzeichen entfernen
+ * - Einheiten (cm, m) entfernen
+ * - Komma → Punkt
+ * - ˆ → ^ (kopiertes Sonderzeichen)
+ * - ² → ^2
  */
-function cleanInput(raw) {
+function normalize(raw) {
   return raw
     .trim()
-    .replace(/\s+/g, '')          // alle Leerzeichen entfernen
-    .replace(/cm|m\b/gi, '')      // Einheiten entfernen
-    .replace(',', '.');           // Komma → Punkt
+    .replace(/\s+/g, '')
+    .replace(/cm\b/gi, '')
+    .replace(/(?<!\^)m\b/gi, '')   // "m" als Einheit, aber nicht "^m"
+    .replace(',', '.')
+    .replace(/\u02C6/g, '^')       // ˆ (U+02C6) → ^
+    .replace(/²/g, '^2');          // ² → ^2
 }
 
 /**
- * Prüft eine Antwort gegen den erwarteten Wert.
- * type: 'number' | 'text'
- * expected: Zahl, String oder Array von Strings
+ * Prüft eine einzelne Teilantwort.
+ * type: 'number' | 'text' | 'formula'
  */
-function isCorrect(raw, expected, type) {
-  const cleaned = cleanInput(raw);
+function checkPart(raw, expected, type) {
+  const cleaned = normalize(raw);
 
   if (type === 'number') {
     const num = parseFloat(cleaned);
     if (isNaN(num)) return false;
-    const exp = Array.isArray(expected) ? expected[0] : expected;
+    const exp = typeof expected === 'number' ? expected : parseFloat(expected);
     return Math.abs(num - exp) <= 0.05;
   }
 
-  // text
-  const lower = cleaned.toLowerCase();
-  if (Array.isArray(expected)) {
-    return expected.some(e => e.toLowerCase().replace(/\s+/g, '') === lower);
+  if (type === 'formula') {
+    const lc = cleaned.toLowerCase();
+    if (Array.isArray(expected)) {
+      return expected.some(e => normalize(e).toLowerCase() === lc);
+    }
+    return normalize(expected).toLowerCase() === lc;
   }
-  return expected.toLowerCase().replace(/\s+/g, '') === lower;
+
+  // text
+  const lc = cleaned.toLowerCase();
+  if (Array.isArray(expected)) {
+    return expected.some(e => e.toLowerCase().replace(/\s+/g, '') === lc);
+  }
+  return expected.toLowerCase().replace(/\s+/g, '') === lc;
 }
 
-// ── SPEICHERN / LADEN ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// LOCALSTORAGE
+// ══════════════════════════════════════════════════════════════
 
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    // localStorage nicht verfügbar – kein Problem
-  }
+  } catch (_) {}
 }
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // Validierung
-      if (
-        typeof parsed.currentIndex === 'number' &&
-        Array.isArray(parsed.collectedCodes)
-      ) {
-        state = parsed;
-      }
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (
+      typeof parsed.unlocked === 'boolean' &&
+      Array.isArray(parsed.codeSlots) &&
+      parsed.codeSlots.length === CODE_LENGTH &&
+      Array.isArray(parsed.visited)
+    ) {
+      state = parsed;
     }
-  } catch (e) {
-    // Fehler beim Laden → Standardzustand behalten
-  }
+  } catch (_) {}
 }
 
-// ── DOM-HELFER ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// DOM-HELFER
+// ══════════════════════════════════════════════════════════════
 
 function $(id) { return document.getElementById(id); }
 
-function showOnly(screenId) {
-  $('start-screen').classList.add('hidden');
-  $('station-card').classList.add('hidden');
-  $('finish-screen').classList.add('hidden');
-  $(screenId).classList.remove('hidden');
+const SCREENS = ['screen-start', 'screen-password', 'screen-station', 'screen-finish'];
+
+function showScreen(id) {
+  SCREENS.forEach(s => $(s).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function setFeedback(elId, msg, type) {
-  const el = $(elId);
-  el.textContent = msg;
+function setFeedback(msg, type) {
+  const el = $('st-feedback');
+  el.innerHTML = msg;
   el.className = 'feedback ' + type;
   el.classList.remove('hidden');
 }
 
-function hideFeedback(elId) {
-  const el = $(elId);
+function hideFeedback() {
+  const el = $('st-feedback');
   el.classList.add('hidden');
-  el.textContent = '';
   el.className = 'feedback hidden';
+  el.innerHTML = '';
 }
 
-// ── CODE-LEISTE RENDERN ───────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// CODE-LEISTE
+// ══════════════════════════════════════════════════════════════
+
+// Erwartete Buchstaben in Reihenfolge (für Anzeige)
+const CODE_LETTERS = ['A', 'Z', 'L', 'J', 'C', 'H', 'B'];
 
 function renderCodeBar() {
   const bar = $('code-bar');
   bar.innerHTML = '';
 
-  STATIONS.forEach((station, i) => {
-    const letter = state.collectedCodes[i];
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    const letter = state.codeSlots[i];
+    const span = document.createElement('span');
     if (letter) {
-      const span = document.createElement('span');
       span.className = 'code-letter';
       span.textContent = letter;
-      span.title = 'Station ' + station.id;
-      bar.appendChild(span);
+      span.title = 'Block ' + (i + 1) + ': ' + letter;
     } else {
-      const span = document.createElement('span');
       span.className = 'code-slot';
-      span.textContent = i + 1;
-      span.title = 'Station ' + station.id + ' – noch nicht gelöst';
-      bar.appendChild(span);
+      span.textContent = '_';
+      span.title = 'Block ' + (i + 1) + ': noch nicht erhalten';
     }
-  });
-}
-
-// ── FORTSCHRITTSBALKEN ────────────────────────────────────────
-
-function renderProgress() {
-  const done = state.collectedCodes.filter(Boolean).length;
-  const total = STATIONS.length;
-  const pct = Math.round((done / total) * 100);
-  $('progress-fill').style.width = pct + '%';
-  $('progress-text').textContent = 'Station ' + done + ' / ' + total;
-}
-
-// ── STATION ANZEIGEN ─────────────────────────────────────────
-
-function showStation(index) {
-  const station = STATIONS[index];
-
-  // Karte zurücksetzen
-  $('station-number').textContent = 'Station ' + station.id;
-  $('station-title').textContent = station.title;
-  $('task-text').textContent = station.task;
-
-  $('answer-input').value = '';
-  $('answer-input').disabled = false;
-  $('check-btn').disabled = false;
-
-  hideFeedback('feedback-main');
-
-  $('extra-section').classList.add('hidden');
-  $('extra-text').textContent = '';
-  $('extra-input').value = '';
-  $('extra-input').disabled = false;
-  $('extra-check-btn').disabled = false;
-  hideFeedback('feedback-extra');
-
-  $('next-section').classList.add('hidden');
-  $('code-reveal').innerHTML = '';
-
-  showOnly('station-card');
-
-  // Fokus auf Eingabefeld
-  setTimeout(() => $('answer-input').focus(), 100);
-}
-
-// ── ANTWORT PRÜFEN ────────────────────────────────────────────
-
-function checkAnswer() {
-  const index = state.currentIndex;
-  const station = STATIONS[index];
-  const raw = $('answer-input').value;
-
-  if (!raw.trim()) {
-    setFeedback('feedback-main', '⚠ Bitte gib eine Antwort ein.', 'info');
-    return;
-  }
-
-  if (isCorrect(raw, station.answer, station.type)) {
-    // ✅ Richtig
-    $('answer-input').disabled = true;
-    $('check-btn').disabled = true;
-    setFeedback('feedback-main', '✅ Richtig! Super gemacht!', 'correct');
-    revealCode(index, false);
-  } else {
-    // ❌ Falsch → Zusatzaufgabe
-    $('answer-input').disabled = true;
-    $('check-btn').disabled = true;
-    setFeedback(
-      'feedback-main',
-      '❌ Das ist leider nicht richtig. Löse die Zusatzaufgabe!',
-      'wrong'
-    );
-    showExtra(station);
+    bar.appendChild(span);
   }
 }
 
-// ── ZUSATZAUFGABE ANZEIGEN ────────────────────────────────────
-
-function showExtra(station) {
-  $('extra-text').textContent = station.extra.task;
-  $('extra-section').classList.remove('hidden');
-  setTimeout(() => $('extra-input').focus(), 100);
-}
-
-// ── ZUSATZAUFGABE PRÜFEN ──────────────────────────────────────
-
-function checkExtra() {
-  const index = state.currentIndex;
-  const station = STATIONS[index];
-  const raw = $('extra-input').value;
-
-  if (!raw.trim()) {
-    setFeedback('feedback-extra', '⚠ Bitte gib eine Antwort ein.', 'info');
-    return;
-  }
-
-  if (isCorrect(raw, station.extra.answer, station.extra.type)) {
-    // ✅ Zusatzaufgabe richtig
-    $('extra-input').disabled = true;
-    $('extra-check-btn').disabled = true;
-    setFeedback('feedback-extra', '✅ Gut gemacht! Du hast die Zusatzaufgabe gelöst.', 'correct');
-    revealCode(index, true);
-  } else {
-    // ❌ Zusatzaufgabe falsch
-    $('extra-input').disabled = true;
-    $('extra-check-btn').disabled = true;
-    setFeedback(
-      'feedback-extra',
-      '❌ Hole dir Hilfe oder vergleiche deinen Rechenweg noch einmal.',
-      'wrong'
-    );
-    // Trotzdem Weiter-Button anzeigen (ohne Code zu sammeln)
-    showNextButton(index, true);
-  }
-}
-
-// ── CODE ENTHÜLLEN ────────────────────────────────────────────
-
-function revealCode(index, fromExtra) {
-  const station = STATIONS[index];
-  const letter = station.code;
-
-  // Code in Zustand speichern (falls noch nicht vorhanden)
-  if (!state.collectedCodes[index]) {
-    state.collectedCodes[index] = letter;
+function giveCodeLetter(pos, letter) {
+  // Nur vergeben, wenn Slot noch leer
+  if (state.codeSlots[pos] === null) {
+    state.codeSlots[pos] = letter;
     saveState();
     renderCodeBar();
-    renderProgress();
   }
-
-  showNextButton(index, false, letter);
 }
 
-function showNextButton(index, noCode, letter) {
-  const reveal = $('code-reveal');
-  if (!noCode && letter) {
-    reveal.innerHTML =
-      '🔑 Dein Codebuchstabe für diese Station: ' +
-      '<span class="big-letter">' + letter + '</span>';
-  } else if (noCode) {
-    reveal.innerHTML =
-      '<span style="color:var(--text-muted);font-size:0.9rem;">' +
-      'Kein Codebuchstabe für diese Station – weiter zur nächsten.</span>';
-  }
+// ══════════════════════════════════════════════════════════════
+// PASSWORT
+// ══════════════════════════════════════════════════════════════
 
-  const nextSection = $('next-section');
-  nextSection.classList.remove('hidden');
+function showPasswordPrompt() {
+  $('pw-input').value = '';
+  $('pw-feedback').classList.add('hidden');
+  $('pw-feedback').textContent = '';
+  showScreen('screen-password');
+  setTimeout(() => $('pw-input').focus(), 120);
+}
 
-  // Letzter Station?
-  const isLast = index === STATIONS.length - 1;
-  const btn = $('next-btn');
-  if (isLast) {
-    btn.textContent = '🏁 Mission abschließen';
+function checkPassword() {
+  const val = $('pw-input').value.trim().toLowerCase();
+  if (val === 'kathete') {
+    state.unlocked = true;
+    saveState();
+    startGame();
   } else {
-    btn.textContent = '➡ Weiter zur nächsten Station';
+    const fb = $('pw-feedback');
+    fb.textContent = '❌ Das Passwort stimmt noch nicht. Tipp: Eine Seite am rechten Winkel.';
+    fb.className = 'feedback wrong';
+    fb.classList.remove('hidden');
+    $('pw-input').value = '';
+    $('pw-input').focus();
   }
-
-  // Scrollen zum Weiter-Button
-  setTimeout(() => nextSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
 }
 
-// ── NÄCHSTE STATION ───────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// SPIEL STARTEN / FORTSETZEN
+// ══════════════════════════════════════════════════════════════
 
-function nextStation() {
-  const nextIndex = state.currentIndex + 1;
+function startGame() {
+  $('code-bar-wrapper').classList.remove('hidden');
+  renderCodeBar();
 
-  if (nextIndex >= STATIONS.length) {
-    // Alle Stationen abgeschlossen
+  if (state.currentStation === null) {
+    // Frisch starten
+    loadStation(1);
+  } else if (state.currentStation === 'done') {
     showFinish();
-    return;
+  } else {
+    loadStation(state.currentStation);
   }
-
-  state.currentIndex = nextIndex;
-  saveState();
-  showStation(nextIndex);
 }
 
-// ── ABSCHLUSS ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// STATION LADEN & ANZEIGEN
+// ══════════════════════════════════════════════════════════════
 
-function showFinish() {
-  showOnly('finish-screen');
+function loadStation(id) {
+  const station = STATIONS[id];
+  if (!station) { showFinish(); return; }
 
-  const finalCodeEl = $('final-code');
-  finalCodeEl.innerHTML = '';
+  state.currentStation = id;
+  if (!state.visited.includes(id)) state.visited.push(id);
+  saveState();
 
-  STATIONS.forEach((station, i) => {
-    const letter = state.collectedCodes[i] || '?';
-    const span = document.createElement('span');
-    span.className = 'code-letter';
-    span.textContent = letter;
-    span.title = 'Station ' + station.id;
-    finalCodeEl.appendChild(span);
+  pendingNext = null;
+
+  // Badge & Titel
+  $('st-badge').textContent =
+    (station.isSupport ? '🔧 Förderstation ' : 'Station ') + station.id;
+  $('st-title').textContent = station.title;
+
+  // Teilfragen aufbauen
+  const partsEl = $('st-parts');
+  partsEl.innerHTML = '';
+
+  station.parts.forEach((part, idx) => {
+    const block = document.createElement('div');
+    block.className = 'part-block';
+
+    if (station.parts.length > 1) {
+      const label = document.createElement('div');
+      label.className = 'part-label';
+      label.textContent = 'Teilaufgabe ' + (idx + 1);
+      block.appendChild(label);
+    }
+
+    const q = document.createElement('div');
+    q.className = 'part-question';
+    q.textContent = part.question;
+    block.appendChild(q);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'part-input';
+    input.placeholder = 'Deine Antwort …';
+    input.autocomplete = 'off';
+    input.dataset.partIndex = idx;
+    input.id = 'part-input-' + idx;
+
+    // Enter → prüfen
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') checkStation();
+    });
+
+    block.appendChild(input);
+    partsEl.appendChild(block);
   });
 
-  renderProgress();
+  // Buttons zurücksetzen
+  hideFeedback();
+  $('st-check-btn').disabled = false;
+  $('st-check-btn').classList.remove('hidden');
+  $('st-next-btn').classList.add('hidden');
+
+  showScreen('screen-station');
+
+  // Fokus auf erstes Eingabefeld
+  setTimeout(() => {
+    const first = document.getElementById('part-input-0');
+    if (first) first.focus();
+  }, 120);
 }
 
-// ── MISSION STARTEN ───────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// STATION PRÜFEN
+// ══════════════════════════════════════════════════════════════
 
-function startMission() {
-  state.currentIndex = 0;
-  saveState();
-  showStation(0);
+function checkStation() {
+  const id = state.currentStation;
+  const station = STATIONS[id];
+
+  // Alle Eingaben sammeln
+  const inputs = document.querySelectorAll('.part-input');
+  let allCorrect = true;
+  let emptyFound = false;
+
+  inputs.forEach((input, idx) => {
+    if (!input.value.trim()) emptyFound = true;
+  });
+
+  if (emptyFound) {
+    setFeedback('⚠ Bitte fülle alle Felder aus.', 'info');
+    return;
+  }
+
+  inputs.forEach((input, idx) => {
+    const part = station.parts[idx];
+    if (!checkPart(input.value, part.answer, part.type)) {
+      allCorrect = false;
+    }
+  });
+
+  // Eingaben sperren
+  inputs.forEach(inp => { inp.disabled = true; });
+  $('st-check-btn').disabled = true;
+
+  if (allCorrect) {
+    handleCorrect(station);
+  } else {
+    handleWrong(station);
+  }
+
+  // Zum Feedback scrollen
+  setTimeout(() => {
+    $('st-feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
 }
 
-// ── FORTSCHRITT ZURÜCKSETZEN ──────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// RICHTIG / FALSCH
+// ══════════════════════════════════════════════════════════════
+
+function handleCorrect(station) {
+  const { giveCode, codePos, next } = station.onCorrect;
+
+  // Buchstabe vergeben (nur wenn Slot noch leer)
+  const alreadyHad = state.codeSlots[codePos] !== null;
+  giveCodeLetter(codePos, giveCode);
+
+  let msg = '✅ Richtig! Super gemacht!';
+  if (!alreadyHad) {
+    msg += '\n🔑 Du erhältst den Codebuchstaben: <strong>' + giveCode + '</strong>';
+  }
+
+  setFeedback(msg, 'correct');
+  pendingNext = next;
+  showNextButton(next);
+}
+
+function handleWrong(station) {
+  const { next } = station.onWrong;
+
+  let msg = '❌ Das ist leider nicht richtig.';
+  if (next !== null) {
+    const nextStation = STATIONS[next];
+    if (nextStation && nextStation.isSupport) {
+      msg += '\n➡ Weiter zur Förderstation ' + next + '.';
+    } else if (next !== null) {
+      msg += '\n➡ Weiter zu Station ' + next + '.';
+    }
+  } else {
+    msg += '\n➡ Das war die letzte Station.';
+  }
+
+  setFeedback(msg, 'wrong');
+  pendingNext = next;
+  showNextButton(next);
+}
+
+function showNextButton(next) {
+  const btn = $('st-next-btn');
+  if (next === null) {
+    btn.textContent = '🏁 Mission abschließen';
+  } else {
+    btn.textContent = '➡ Weiter';
+  }
+  btn.classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════════════
+// WEITER-NAVIGATION
+// ══════════════════════════════════════════════════════════════
+
+function goNext() {
+  if (pendingNext === null) {
+    // Ende
+    state.currentStation = 'done';
+    saveState();
+    showFinish();
+  } else {
+    loadStation(pendingNext);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// ABSCHLUSS
+// ══════════════════════════════════════════════════════════════
+
+function showFinish() {
+  $('code-bar-wrapper').classList.remove('hidden');
+  renderCodeBar();
+
+  const el = $('finish-code');
+  el.innerHTML = '';
+
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    const letter = state.codeSlots[i];
+    const span = document.createElement('span');
+    if (letter) {
+      span.className = 'code-letter';
+      span.textContent = letter;
+    } else {
+      span.className = 'code-slot';
+      span.textContent = '_';
+    }
+    el.appendChild(span);
+  }
+
+  showScreen('screen-finish');
+}
+
+// ══════════════════════════════════════════════════════════════
+// FORTSCHRITT ZURÜCKSETZEN
+// ══════════════════════════════════════════════════════════════
 
 function resetProgress() {
-  if (!confirm('Möchtest du deinen Fortschritt wirklich zurücksetzen?\nAlle gesammelten Codebuchstaben gehen verloren.')) {
-    return;
-  }
-  state = { currentIndex: -1, collectedCodes: [] };
+  if (!confirm(
+    'Möchtest du deinen Fortschritt wirklich zurücksetzen?\n' +
+    'Alle gesammelten Codebuchstaben gehen verloren.'
+  )) return;
+
+  state = {
+    unlocked:       false,
+    currentStation: null,
+    codeSlots:      new Array(CODE_LENGTH).fill(null),
+    visited:        []
+  };
+  pendingNext = null;
   saveState();
-  renderCodeBar();
-  renderProgress();
-  showOnly('start-screen');
+
+  $('code-bar-wrapper').classList.add('hidden');
+  showScreen('screen-start');
 }
 
-// ── ENTER-TASTE ───────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// BROWSER-ZURÜCK VERHINDERN
+// ══════════════════════════════════════════════════════════════
 
-document.addEventListener('keydown', function (e) {
-  if (e.key !== 'Enter') return;
-
-  // Haupteingabe
-  if (document.activeElement === $('answer-input')) {
-    checkAnswer();
-    return;
-  }
-
-  // Zusatzeingabe
-  if (document.activeElement === $('extra-input')) {
-    checkExtra();
-    return;
-  }
-});
-
-// ── BROWSER-ZURÜCK VERHINDERN ─────────────────────────────────
-// Wir pushen einen Eintrag in die History, damit der Zurück-Button
-// nicht die Seite verlässt, sondern nur den State-Eintrag entfernt.
-// Das verhindert, dass Schüler per Zurück-Taste Stationen überspringen.
-
-(function preventBackNavigation() {
+(function preventBack() {
   history.pushState(null, '', location.href);
   window.addEventListener('popstate', function () {
     history.pushState(null, '', location.href);
   });
 })();
 
-// ── INITIALISIERUNG ───────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// PASSWORT-EINGABE: ENTER-TASTE
+// ══════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pwInput = $('pw-input');
+  if (pwInput) {
+    pwInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+// INITIALISIERUNG
+// ══════════════════════════════════════════════════════════════
 
 function init() {
   loadState();
-  renderCodeBar();
-  renderProgress();
 
-  if (state.currentIndex === -1) {
-    // Noch nicht gestartet
-    showOnly('start-screen');
-  } else if (state.currentIndex >= STATIONS.length) {
-    // Bereits abgeschlossen
-    showFinish();
+  if (state.unlocked) {
+    // Passwort war bereits korrekt → direkt ins Spiel
+    $('code-bar-wrapper').classList.remove('hidden');
+    renderCodeBar();
+
+    if (state.currentStation === 'done') {
+      showFinish();
+    } else if (state.currentStation !== null) {
+      loadStation(state.currentStation);
+    } else {
+      loadStation(1);
+    }
   } else {
-    // Mitten in einer Station – Station neu anzeigen
-    showStation(state.currentIndex);
+    showScreen('screen-start');
   }
 }
 
-// Starten, sobald das DOM bereit ist
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {

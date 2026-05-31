@@ -8,9 +8,12 @@
 </head>
 <body>
 
+  <!-- ══════════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════════ -->
   <header>
     <div class="header-inner">
-      <div class="header-icon">📐</div>
+      <span class="header-icon">📐</span>
       <div>
         <h1>Knack den Code</h1>
         <p class="subtitle">Mission Pythagoras</p>
@@ -19,73 +22,86 @@
     <p class="header-desc">Löse die Stationen und sammle deinen Geheimcode.</p>
   </header>
 
-  <!-- Code-Leiste -->
-  <div class="code-bar-wrapper">
-    <div class="code-bar-label">Dein Code:</div>
+  <!-- ══════════════════════════════════════════════
+       CODE-LEISTE (immer sichtbar während Spiel)
+  ══════════════════════════════════════════════ -->
+  <div id="code-bar-wrapper" class="code-bar-wrapper hidden">
+    <span class="code-bar-label">Dein Code:</span>
     <div id="code-bar" class="code-bar"></div>
-    <button id="reset-btn" class="btn btn-reset" onclick="resetProgress()">🔄 Fortschritt zurücksetzen</button>
+    <button class="btn btn-reset" onclick="resetProgress()">🔄 Zurücksetzen</button>
   </div>
 
-  <!-- Fortschrittsanzeige -->
-  <div class="progress-wrapper">
-    <div class="progress-track">
-      <div id="progress-fill" class="progress-fill"></div>
-    </div>
-    <div id="progress-text" class="progress-text">Station 0 / 13</div>
-  </div>
+  <!-- ══════════════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════════════ -->
+  <main id="main">
 
-  <!-- Station-Container -->
-  <main id="main-content">
-
-    <!-- Station-Karte -->
-    <div id="station-card" class="station-card hidden">
-      <div class="station-header">
-        <span id="station-number" class="station-number"></span>
-        <span id="station-title" class="station-title"></span>
-      </div>
-
-      <div id="task-text" class="task-text"></div>
-
-      <div class="input-row">
-        <input type="text" id="answer-input" class="answer-input" placeholder="Deine Antwort …" autocomplete="off" />
-        <button id="check-btn" class="btn btn-check" onclick="checkAnswer()">✔ Prüfen</button>
-      </div>
-
-      <div id="feedback-main" class="feedback hidden"></div>
-
-      <!-- Zusatzaufgabe -->
-      <div id="extra-section" class="extra-section hidden">
-        <div class="extra-label">📋 Zusatzaufgabe:</div>
-        <div id="extra-text" class="extra-text"></div>
-        <div class="input-row">
-          <input type="text" id="extra-input" class="answer-input" placeholder="Deine Antwort …" autocomplete="off" />
-          <button id="extra-check-btn" class="btn btn-check" onclick="checkExtra()">✔ Prüfen</button>
+    <!-- ── STARTSEITE ── -->
+    <div id="screen-start" class="screen">
+      <div class="tile-grid">
+        <div class="tile" onclick="showPasswordPrompt()">
+          <div class="tile-icon">🔐</div>
+          <div class="tile-title">Klasse 9 – Stationen: Pythagoras</div>
+          <div class="tile-sub">Klicke hier, um zu starten</div>
         </div>
-        <div id="feedback-extra" class="feedback hidden"></div>
-      </div>
-
-      <!-- Weiter-Button -->
-      <div id="next-section" class="next-section hidden">
-        <div id="code-reveal" class="code-reveal"></div>
-        <button id="next-btn" class="btn btn-next" onclick="nextStation()">➡ Weiter zur nächsten Station</button>
       </div>
     </div>
 
-    <!-- Abschluss-Bildschirm -->
-    <div id="finish-screen" class="finish-screen hidden">
-      <div class="finish-icon">🏆</div>
-      <h2>Mission abgeschlossen!</h2>
-      <p>Dein vollständiger Geheimcode lautet:</p>
-      <div id="final-code" class="final-code"></div>
-      <p class="finish-msg">Zeige den Code deiner Lehrkraft.</p>
+    <!-- ── PASSWORT-ABFRAGE ── -->
+    <div id="screen-password" class="screen hidden">
+      <div class="card password-card">
+        <div class="card-icon">🔑</div>
+        <h2>Passwort eingeben</h2>
+        <p class="card-desc">Gib das Passwort ein, das du von deiner Lehrkraft erhalten hast.</p>
+        <div class="input-row">
+          <input type="password" id="pw-input" class="answer-input" placeholder="Passwort …"
+                 autocomplete="off" />
+          <button class="btn btn-check" onclick="checkPassword()">✔ OK</button>
+        </div>
+        <div id="pw-feedback" class="feedback hidden"></div>
+        <button class="btn btn-back" onclick="showScreen('screen-start')">← Zurück</button>
+      </div>
     </div>
 
-    <!-- Start-Bildschirm (wenn alles neu) -->
-    <div id="start-screen" class="start-screen hidden">
-      <div class="start-icon">🔐</div>
-      <h2>Bereit für die Mission?</h2>
-      <p>Löse alle 13 Stationen und knacke den Geheimcode!</p>
-      <button class="btn btn-next" onclick="startMission()">🚀 Mission starten</button>
+    <!-- ── STATION-KARTE ── -->
+    <div id="screen-station" class="screen hidden">
+      <div class="card station-card">
+
+        <!-- Kopfzeile -->
+        <div class="station-header">
+          <span id="st-badge" class="station-badge"></span>
+          <span id="st-title" class="station-title"></span>
+        </div>
+
+        <!-- Teilfragen werden hier dynamisch eingefügt -->
+        <div id="st-parts" class="station-parts"></div>
+
+        <!-- Prüfen-Button -->
+        <button id="st-check-btn" class="btn btn-check btn-wide" onclick="checkStation()">
+          ✔ Antwort prüfen
+        </button>
+
+        <!-- Feedback -->
+        <div id="st-feedback" class="feedback hidden"></div>
+
+        <!-- Weiter-Button -->
+        <button id="st-next-btn" class="btn btn-next btn-wide hidden" onclick="goNext()">
+          ➡ Weiter
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ── ABSCHLUSS ── -->
+    <div id="screen-finish" class="screen hidden">
+      <div class="card finish-card">
+        <div class="finish-icon">🏆</div>
+        <h2>Mission abgeschlossen!</h2>
+        <p class="finish-sub">Dein Code:</p>
+        <div id="finish-code" class="finish-code-display"></div>
+        <p class="finish-hint">Zeige diesen Code deiner Lehrkraft.</p>
+        <button class="btn btn-reset btn-wide" onclick="resetProgress()">🔄 Neu starten</button>
+      </div>
     </div>
 
   </main>
