@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knack den Code – Mission Pythagoras</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-icon">📐</div>
+      <div>
+        <h1>Knack den Code</h1>
+        <p class="subtitle">Mission Pythagoras</p>
+      </div>
+    </div>
+    <p class="header-desc">Löse die Stationen und sammle deinen Geheimcode.</p>
+  </header>
+
+  <!-- Code-Leiste -->
+  <div class="code-bar-wrapper">
+    <div class="code-bar-label">Dein Code:</div>
+    <div id="code-bar" class="code-bar"></div>
+    <button id="reset-btn" class="btn btn-reset" onclick="resetProgress()">🔄 Fortschritt zurücksetzen</button>
+  </div>
+
+  <!-- Fortschrittsanzeige -->
+  <div class="progress-wrapper">
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+    <div id="progress-text" class="progress-text">Station 0 / 13</div>
+  </div>
+
+  <!-- Station-Container -->
+  <main id="main-content">
+
+    <!-- Station-Karte -->
+    <div id="station-card" class="station-card hidden">
+      <div class="station-header">
+        <span id="station-number" class="station-number"></span>
+        <span id="station-title" class="station-title"></span>
+      </div>
+
+      <div id="task-text" class="task-text"></div>
+
+      <div class="input-row">
+        <input type="text" id="answer-input" class="answer-input" placeholder="Deine Antwort …" autocomplete="off" />
+        <button id="check-btn" class="btn btn-check" onclick="checkAnswer()">✔ Prüfen</button>
+      </div>
+
+      <div id="feedback-main" class="feedback hidden"></div>
+
+      <!-- Zusatzaufgabe -->
+      <div id="extra-section" class="extra-section hidden">
+        <div class="extra-label">📋 Zusatzaufgabe:</div>
+        <div id="extra-text" class="extra-text"></div>
+        <div class="input-row">
+          <input type="text" id="extra-input" class="answer-input" placeholder="Deine Antwort …" autocomplete="off" />
+          <button id="extra-check-btn" class="btn btn-check" onclick="checkExtra()">✔ Prüfen</button>
+        </div>
+        <div id="feedback-extra" class="feedback hidden"></div>
+      </div>
+
+      <!-- Weiter-Button -->
+      <div id="next-section" class="next-section hidden">
+        <div id="code-reveal" class="code-reveal"></div>
+        <button id="next-btn" class="btn btn-next" onclick="nextStation()">➡ Weiter zur nächsten Station</button>
+      </div>
+    </div>
+
+    <!-- Abschluss-Bildschirm -->
+    <div id="finish-screen" class="finish-screen hidden">
+      <div class="finish-icon">🏆</div>
+      <h2>Mission abgeschlossen!</h2>
+      <p>Dein vollständiger Geheimcode lautet:</p>
+      <div id="final-code" class="final-code"></div>
+      <p class="finish-msg">Zeige den Code deiner Lehrkraft.</p>
+    </div>
+
+    <!-- Start-Bildschirm (wenn alles neu) -->
+    <div id="start-screen" class="start-screen hidden">
+      <div class="start-icon">🔐</div>
+      <h2>Bereit für die Mission?</h2>
+      <p>Löse alle 13 Stationen und knacke den Geheimcode!</p>
+      <button class="btn btn-next" onclick="startMission()">🚀 Mission starten</button>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>Klasse 9 · Grundkurs Mathematik · Satz des Pythagoras</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
