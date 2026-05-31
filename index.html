@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Knack den Code – Mission Pythagoras</title>
+  <title>Digitale Mathe-Werkstatt</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,7 +11,19 @@
   <!-- ══════════════════════════════════════════════
        HEADER
   ══════════════════════════════════════════════ -->
-  <header>
+  <!-- Werkstatt-Header (hell, nur auf Startseite / Passwort) -->
+  <header id="header-workshop" class="header-workshop">
+    <div class="workshop-header-inner">
+      <div class="workshop-logo">✏️</div>
+      <div>
+        <h1 class="workshop-title">Digitale Mathe-Werkstatt</h1>
+        <p class="workshop-subtitle">Interaktive Übungen und Stationenspiele für den Mathematikunterricht.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Spiel-Header (dunkel, nur während Stationenspiel / Abschluss) -->
+  <header id="header-game" class="header-game hidden">
     <div class="header-inner">
       <span class="header-icon">📐</span>
       <div>
@@ -36,30 +48,49 @@
   ══════════════════════════════════════════════ -->
   <main id="main">
 
-    <!-- ── STARTSEITE ── -->
-    <div id="screen-start" class="screen">
-      <div class="tile-grid">
-        <div class="tile" onclick="showPasswordPrompt()">
-          <div class="tile-icon">🔐</div>
-          <div class="tile-title">Klasse 9 – Stationen: Pythagoras</div>
-          <div class="tile-sub">Klicke hier, um zu starten</div>
+    <!-- ── STARTSEITE (Werkstatt) ── -->
+    <div id="screen-start" class="screen screen-workshop">
+      <div class="workshop-welcome">
+        <h2 class="workshop-welcome-title">Willkommen in der Digitalen Mathe-Werkstatt.</h2>
+        <p class="workshop-welcome-text">
+          Hier finden sich digitale Lernangebote, die zur Unterstützung des Mathematikunterrichts
+          entwickelt wurden. Die Übungen können selbstständig bearbeitet werden und ergänzen den
+          Unterricht durch interaktive Aufgabenformate.
+        </p>
+      </div>
+
+      <div class="offers-section">
+        <h3 class="offers-heading">Lernangebote</h3>
+        <div class="offers-grid">
+
+          <!-- Karte: Klasse 9 – Satz des Pythagoras -->
+          <div class="offer-card" onclick="showPasswordPrompt()">
+            <div class="offer-card-icon">📐</div>
+            <div class="offer-card-body">
+              <div class="offer-card-title">Klasse 9 – Satz des Pythagoras</div>
+              <div class="offer-card-desc">Knack den Code und löse die Stationen erfolgreich.</div>
+            </div>
+            <button class="btn btn-offer" tabindex="-1">Stationenspiel öffnen</button>
+          </div>
+
+          <!-- Zukünftige Karten können hier ergänzt werden -->
+
         </div>
       </div>
     </div>
 
     <!-- ── PASSWORT-ABFRAGE ── -->
-    <div id="screen-password" class="screen hidden">
+    <div id="screen-password" class="screen screen-workshop hidden">
       <div class="card password-card">
         <div class="card-icon">🔑</div>
         <h2>Passwort eingeben</h2>
-        <p class="card-desc">Gib das Passwort ein, das du von deiner Lehrkraft erhalten hast.</p>
         <div class="input-row">
           <input type="password" id="pw-input" class="answer-input" placeholder="Passwort …"
                  autocomplete="off" />
           <button class="btn btn-check" onclick="checkPassword()">✔ OK</button>
         </div>
         <div id="pw-feedback" class="feedback hidden"></div>
-        <button class="btn btn-back" onclick="showScreen('screen-start')">← Zurück</button>
+        <button class="btn btn-back" onclick="backToWorkshop()">← Zurück</button>
       </div>
     </div>
 
@@ -106,8 +137,15 @@
 
   </main>
 
-  <footer>
-    <p>Klasse 9 · Grundkurs Mathematik · Satz des Pythagoras</p>
+  <!-- Werkstatt-Footer (hell) -->
+  <footer id="footer-workshop" class="footer-workshop">
+    <p>Digitale Mathe-Werkstatt</p>
+    <p class="footer-sub">Entwickelt für Unterrichts- und Übungszwecke.</p>
+  </footer>
+
+  <!-- Spiel-Footer (dunkel) -->
+  <footer id="footer-game" class="footer-game hidden">
+    <p>Knack den Code – Mission Pythagoras</p>
   </footer>
 
   <script src="script.js"></script>

@@ -426,10 +426,30 @@ function $(id) { return document.getElementById(id); }
 
 const SCREENS = ['screen-start', 'screen-password', 'screen-station', 'screen-finish'];
 
+// Screens, die zur Werkstatt gehören (heller Header/Footer)
+const WORKSHOP_SCREENS = ['screen-start', 'screen-password'];
+
 function showScreen(id) {
   SCREENS.forEach(s => $(s).classList.add('hidden'));
   $(id).classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateChrome(id);
+}
+
+/**
+ * Schaltet Header und Footer zwischen Werkstatt (hell) und Spiel (dunkel) um.
+ */
+function updateChrome(screenId) {
+  const isWorkshop = WORKSHOP_SCREENS.includes(screenId);
+
+  // Header
+  $('header-workshop').classList.toggle('hidden', !isWorkshop);
+  $('header-game').classList.toggle('hidden', isWorkshop);
+
+  // Code-Leiste nur im Spiel sichtbar (wird separat gesteuert)
+  // Footer
+  $('footer-workshop').classList.toggle('hidden', !isWorkshop);
+  $('footer-game').classList.toggle('hidden', isWorkshop);
 }
 
 function setFeedback(msg, type) {
@@ -502,7 +522,7 @@ function checkPassword() {
     startGame();
   } else {
     const fb = $('pw-feedback');
-    fb.textContent = '❌ Das Passwort stimmt noch nicht. Tipp: Eine Seite am rechten Winkel.';
+    fb.textContent = 'Passwort falsch.';
     fb.className = 'feedback wrong';
     fb.classList.remove('hidden');
     $('pw-input').value = '';
@@ -760,6 +780,13 @@ function resetProgress() {
   showScreen('screen-start');
 }
 
+/**
+ * Zurück zur Werkstatt-Startseite (vom Passwort-Screen).
+ */
+function backToWorkshop() {
+  showScreen('screen-start');
+}
+
 // ══════════════════════════════════════════════════════════════
 // BROWSER-ZURÜCK VERHINDERN
 // ══════════════════════════════════════════════════════════════
@@ -804,6 +831,7 @@ function init() {
       loadStation(1);
     }
   } else {
+    // Werkstatt-Startseite: Chrome sofort korrekt setzen
     showScreen('screen-start');
   }
 }
